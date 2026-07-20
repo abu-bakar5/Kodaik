@@ -1,0 +1,6 @@
+{
+  "name": "Kodaik",
+  "description": "Your Legacy, Secured On-Chain. A decentralized digital inheritance vault on Arc Testnet.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
