@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, 
@@ -195,223 +196,242 @@ export default function Claim() {
         </p>
       </div>
 
-      {/* Sandbox banner */}
-      {isConnected && isSimulatedMode && (
-        <div className="mb-8 bg-[#E98B4B]/10 border border-[#E98B4B]/30 rounded-3xl p-5 flex items-start space-x-3 text-sm text-[#E5C384]">
-          <AlertTriangle className="h-5 w-5 text-[#E98B4B] shrink-0 mt-0.5 animate-pulse" />
-          <div>
-            <span className="font-bold block text-[#FDF8F0] mb-0.5">Sandbox Mode Search Active</span>
-            The live Arc Testnet RPC is unreachable. We've unlocked simulated vaults for testing! Try searching for <strong className="text-white">"1"</strong> (Active vault where you're not a beneficiary) or <strong className="text-white">"2"</strong> (Expired/claimable vault where your wallet has an 80% share allocated!).
+      {!isConnected ? (
+        <div className="py-8 flex flex-col justify-center items-center">
+          <div className="bg-[#121412] border border-[#222421] rounded-3xl p-12 text-center max-w-xl w-full shadow-2xl space-y-8">
+            <div className="w-20 h-20 bg-[#1E5148]/30 border border-[#E5C384]/20 rounded-2xl flex items-center justify-center mx-auto">
+              <Shield className="h-10 w-10 text-[#E5C384]" />
+            </div>
+            
+            <div className="space-y-3">
+              <h3 className="font-sans font-black text-2xl text-[#E5C384] tracking-tight">Connect Your Wallet</h3>
+              <p className="text-sm text-[#829693] max-w-md mx-auto leading-relaxed">
+                Connect your wallet to access the Claim Portal. No placeholder, mock, or fake numbers will be displayed here — every metric is securely derived from your active Arc Testnet smart contracts.
+              </p>
+            </div>
+            
+            <div className="flex justify-center pt-2">
+              <ConnectButton />
+            </div>
           </div>
         </div>
-      )}
+      ) : (
+        <>
+          {/* Sandbox banner */}
+          {isSimulatedMode && (
+            <div className="mb-8 bg-[#E98B4B]/10 border border-[#E98B4B]/30 rounded-3xl p-5 flex items-start space-x-3 text-sm text-[#E5C384]">
+              <AlertTriangle className="h-5 w-5 text-[#E98B4B] shrink-0 mt-0.5 animate-pulse" />
+              <div>
+                <span className="font-bold block text-[#FDF8F0] mb-0.5">Sandbox Mode Search Active</span>
+                The live Arc Testnet RPC is unreachable. We've unlocked simulated vaults for testing! Try searching for <strong className="text-white">"1"</strong> (Active vault where you're not a beneficiary) or <strong className="text-white">"2"</strong> (Expired/claimable vault where your wallet has an 80% share allocated!).
+              </div>
+            </div>
+          )}
 
-      {/* Search Bar Container */}
-      <div className="bg-[#153F39] border border-[#1E5148] p-6 rounded-3xl mb-8 shadow-xl">
-        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-grow">
-            <input
-              type="text"
-              placeholder="Enter Vault ID (e.g., 1, 2, etc.)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#071F1B] border border-[#1E5148] rounded-xl pl-11 pr-4 py-3.5 text-sm text-[#FDF8F0] focus:outline-none focus:border-[#E5C384] transition-all font-mono"
-            />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#CBD5E1]/50" />
+          {/* Search Bar Container */}
+          <div className="bg-[#153F39] border border-[#1E5148] p-6 rounded-3xl mb-8 shadow-xl">
+            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-grow">
+                <input
+                  type="text"
+                  placeholder="Enter Vault ID (e.g., 1, 2, etc.)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-[#071F1B] border border-[#1E5148] rounded-xl pl-11 pr-4 py-3.5 text-sm text-[#FDF8F0] focus:outline-none focus:border-[#E5C384] transition-all font-mono"
+                />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#CBD5E1]/50" />
+              </div>
+
+              <button
+                type="submit"
+                className="bg-[#E98B4B] hover:bg-[#d67b3c] text-[#071F1B] px-8 py-3.5 rounded-xl font-display font-bold text-sm transition-all shadow-md flex items-center justify-center space-x-2 shrink-0"
+              >
+                <span>Search Vault</span>
+              </button>
+            </form>
           </div>
 
-          <button
-            type="submit"
-            className="bg-[#E98B4B] hover:bg-[#d67b3c] text-[#071F1B] px-8 py-3.5 rounded-xl font-display font-bold text-sm transition-all shadow-md flex items-center justify-center space-x-2 shrink-0"
-          >
-            <span>Search Vault</span>
-          </button>
-        </form>
-      </div>
+          {/* Main Area */}
+          <AnimatePresence mode="wait">
+            {isVaultLoading && (
+              <motion.div 
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-center py-12"
+              >
+                <Loader2 className="h-10 w-10 text-[#E98B4B] animate-spin mx-auto mb-4" />
+                <p className="text-sm text-[#CBD5E1]">Verifying cryptographic status from Arc Testnet...</p>
+              </motion.div>
+            )}
 
-      {/* Main Area */}
-      <AnimatePresence mode="wait">
-        {isVaultLoading && (
-          <motion.div 
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center py-12"
-          >
-            <Loader2 className="h-10 w-10 text-[#E98B4B] animate-spin mx-auto mb-4" />
-            <p className="text-sm text-[#CBD5E1]">Verifying cryptographic status from Arc Testnet...</p>
-          </motion.div>
-        )}
+            {hasSearched && activeVaultDetails && !isVaultLoading && (
+              <motion.div
+                key="results"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-8"
+              >
+                {/* Vault Status Panel */}
+                <div className="bg-[#153F39] border border-[#1E5148] p-8 rounded-3xl shadow-xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#E98B4B]/5 rounded-full blur-3xl" />
 
-        {hasSearched && activeVaultDetails && !isVaultLoading && (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-8"
-          >
-            {/* Vault Status Panel */}
-            <div className="bg-[#153F39] border border-[#1E5148] p-8 rounded-3xl shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#E98B4B]/5 rounded-full blur-3xl" />
-
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-[#1E5148]/50 pb-5 mb-6 gap-4">
-                <div>
-                  <h3 className="font-display font-extrabold text-xl text-[#FDF8F0]">
-                    {name || `Vault #${vaultId}`}
-                  </h3>
-                  <span className="text-[10px] text-[#E5C384] font-mono">Owner: {owner}</span>
-                </div>
-
-                <div className="flex flex-col items-start sm:items-end">
-                  {claimed ? (
-                    <span className="bg-[#1E5148] text-[#CBD5E1]/50 border border-[#1E5148] px-3.5 py-1 rounded-full text-xs font-semibold">
-                      CLAIMED / EXECUTED
-                    </span>
-                  ) : isClaimable ? (
-                    <span className="bg-[#E98B4B]/10 text-[#E98B4B] border border-[#E98B4B]/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1 animate-pulse">
-                      <AlertTriangle className="h-3.5 w-3.5" />
-                      <span>CLAIM WINDOW OPEN</span>
-                    </span>
-                  ) : (
-                    <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1">
-                      <Clock className="h-3.5 w-3.5" />
-                      <span>HEALTHY (KEEPER ACTIVE)</span>
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Grid Metrics */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-[#071F1B] p-6 rounded-2xl mb-8 border border-[#1E5148]/50 text-xs">
-                <div>
-                  <span className="text-[#CBD5E1]/60 block uppercase tracking-wider mb-1">Vault Total Assets:</span>
-                  <strong className="text-lg font-mono text-[#FDF8F0]">
-                    {parseFloat(totalAssets) > 0 ? `${(parseFloat(totalAssets) / 1e18).toFixed(2)} ARC` : '0 ARC'}
-                  </strong>
-                </div>
-
-                <div>
-                  <span className="text-[#CBD5E1]/60 block uppercase tracking-wider mb-1">Heartbeat Status:</span>
-                  <strong className="text-lg text-[#E5C384]">
-                    {claimed ? 'Inactive' : isClaimable ? 'Expired' : 'Active'}
-                  </strong>
-                </div>
-
-                <div>
-                  <span className="text-[#CBD5E1]/60 block uppercase tracking-wider mb-1">Claim Release:</span>
-                  <strong className={`text-lg font-mono ${isClaimable && !claimed ? 'text-[#E98B4B]' : 'text-[#FDF8F0]'}`}>
-                    {claimed ? 'Claimed' : isClaimable ? 'Available Now' : `${daysLeft} Days Left`}
-                  </strong>
-                </div>
-              </div>
-
-              {/* Beneficiary Specific Guard */}
-              {!isConnected ? (
-                <div className="text-center p-4 bg-[#071F1B] rounded-xl border border-dashed border-[#1E5148] text-sm text-[#CBD5E1]">
-                  Connect your wallet to verify if you are a beneficiary of this vault.
-                </div>
-              ) : isUserBeneficiary ? (
-                <div className="bg-[#E98B4B]/5 border border-[#E5C384]/30 rounded-2xl p-6 space-y-6">
-                  <div className="flex items-start space-x-3 text-sm">
-                    <KeyRound className="h-6 w-6 text-[#E98B4B] shrink-0" />
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-[#1E5148]/50 pb-5 mb-6 gap-4">
                     <div>
-                      <strong className="text-[#E5C384] block mb-1">You are a Valid Beneficiary!</strong>
-                      Your address is registered with a share allocation of <strong>{userShare} Basis Points ({userShare / 100}%)</strong>.
+                      <h3 className="font-display font-extrabold text-xl text-[#FDF8F0]">
+                        {name || `Vault #${vaultId}`}
+                      </h3>
+                      <span className="text-[10px] text-[#E5C384] font-mono">Owner: {owner}</span>
+                    </div>
+
+                    <div className="flex flex-col items-start sm:items-end">
+                      {claimed ? (
+                        <span className="bg-[#1E5148] text-[#CBD5E1]/50 border border-[#1E5148] px-3.5 py-1 rounded-full text-xs font-semibold">
+                          CLAIMED / EXECUTED
+                        </span>
+                      ) : isClaimable ? (
+                        <span className="bg-[#E98B4B]/10 text-[#E98B4B] border border-[#E98B4B]/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1 animate-pulse">
+                          <AlertTriangle className="h-3.5 w-3.5" />
+                          <span>CLAIM WINDOW OPEN</span>
+                        </span>
+                      ) : (
+                        <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1">
+                          <Clock className="h-3.5 w-3.5" />
+                          <span>HEALTHY (KEEPER ACTIVE)</span>
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  {/* Actions depending on status */}
-                  {claimed ? (
-                    <div className="bg-[#1E5148]/40 text-xs text-[#CBD5E1] p-4 rounded-xl text-center border border-[#1E5148]/50">
-                      This vault's claim has already been successfully executed on-chain.
+                  {/* Grid Metrics */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-[#071F1B] p-6 rounded-2xl mb-8 border border-[#1E5148]/50 text-xs">
+                    <div>
+                      <span className="text-[#CBD5E1]/60 block uppercase tracking-wider mb-1">Vault Total Assets:</span>
+                      <strong className="text-lg font-mono text-[#FDF8F0]">
+                        {parseFloat(totalAssets) > 0 ? `${(parseFloat(totalAssets) / 1e18).toFixed(2)} ARC` : '0 ARC'}
+                      </strong>
                     </div>
-                  ) : isClaimable ? (
-                    <div className="space-y-4">
-                      <div className="text-xs text-[#CBD5E1]">
-                        The heartbeat timer has expired because the owner has not logged a keep-alive within the {daysLeft * -1} days buffer. You are authorized to execute the claim and retrieve your allocated portion.
+
+                    <div>
+                      <span className="text-[#CBD5E1]/60 block uppercase tracking-wider mb-1">Heartbeat Status:</span>
+                      <strong className="text-lg text-[#E5C384]">
+                        {claimed ? 'Inactive' : isClaimable ? 'Expired' : 'Active'}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span className="text-[#CBD5E1]/60 block uppercase tracking-wider mb-1">Claim Release:</span>
+                      <strong className={`text-lg font-mono ${isClaimable && !claimed ? 'text-[#E98B4B]' : 'text-[#FDF8F0]'}`}>
+                        {claimed ? 'Claimed' : isClaimable ? 'Available Now' : `${daysLeft} Days Left`}
+                      </strong>
+                    </div>
+                  </div>
+
+                  {/* Beneficiary Specific Guard */}
+                  {isUserBeneficiary ? (
+                    <div className="bg-[#E98B4B]/5 border border-[#E5C384]/30 rounded-2xl p-6 space-y-6">
+                      <div className="flex items-start space-x-3 text-sm">
+                        <KeyRound className="h-6 w-6 text-[#E98B4B] shrink-0" />
+                        <div>
+                          <strong className="text-[#E5C384] block mb-1">You are a Valid Beneficiary!</strong>
+                          Your address is registered with a share allocation of <strong>{userShare} Basis Points ({userShare / 100}%)</strong>.
+                        </div>
                       </div>
-                      <button
-                        onClick={handleExecuteClaim}
-                        disabled={isWritePending || activeTxConfirming}
-                        className="w-full bg-[#E98B4B] hover:bg-[#d67b3c] disabled:opacity-50 text-[#071F1B] py-4 rounded-xl font-display font-bold text-base transition-all flex items-center justify-center space-x-2 shadow-lg cursor-pointer"
-                      >
-                        {isWritePending || activeTxConfirming ? (
-                          <>
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                            <span>{activeTxConfirming ? 'Securing transfer on-chain...' : 'Broadcasting Transaction...'}</span>
-                          </>
-                        ) : (
-                          <>
-                            <Gift className="h-5 w-5" />
-                            <span>Execute Claim & Retrieve Assets</span>
-                          </>
-                        )}
-                      </button>
+
+                      {/* Actions depending on status */}
+                      {claimed ? (
+                        <div className="bg-[#1E5148]/40 text-xs text-[#CBD5E1] p-4 rounded-xl text-center border border-[#1E5148]/50">
+                          This vault's claim has already been successfully executed on-chain.
+                        </div>
+                      ) : isClaimable ? (
+                        <div className="space-y-4">
+                          <div className="text-xs text-[#CBD5E1]">
+                            The heartbeat timer has expired because the owner has not logged a keep-alive within the {daysLeft * -1} days buffer. You are authorized to execute the claim and retrieve your allocated portion.
+                          </div>
+                          <button
+                            onClick={handleExecuteClaim}
+                            disabled={isWritePending || activeTxConfirming}
+                            className="w-full bg-[#E98B4B] hover:bg-[#d67b3c] disabled:opacity-50 text-[#071F1B] py-4 rounded-xl font-display font-bold text-base transition-all flex items-center justify-center space-x-2 shadow-lg cursor-pointer"
+                          >
+                            {isWritePending || activeTxConfirming ? (
+                              <>
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                                <span>{activeTxConfirming ? 'Securing transfer on-chain...' : 'Broadcasting Transaction...'}</span>
+                              </>
+                            ) : (
+                              <>
+                                <Gift className="h-5 w-5" />
+                                <span>Execute Claim & Retrieve Assets</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="bg-[#071F1B] border border-dashed border-[#1E5148] p-4 rounded-xl text-xs text-center text-[#CBD5E1]/80">
+                          The claim window is currently locked. The heartbeat timer is active. As long as the owner pings Kodaik periodically, you cannot claim.
+                        </div>
+                      )}
                     </div>
                   ) : (
-                    <div className="bg-[#071F1B] border border-dashed border-[#1E5148] p-4 rounded-xl text-xs text-center text-[#CBD5E1]/80">
-                      The claim window is currently locked. The heartbeat timer is active. As long as the owner pings Kodaik periodically, you cannot claim.
+                    <div className="bg-red-950/20 border border-red-500/20 rounded-2xl p-6 text-sm text-red-300 flex items-start space-x-3">
+                      <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="block mb-1 text-red-400">Unauthorized Address</strong>
+                        The connected wallet is NOT registered as a beneficiary for this vault. Only registered beneficiaries can claim allocated funds.
+                      </div>
                     </div>
                   )}
-                </div>
-              ) : (
-                <div className="bg-red-950/20 border border-red-500/20 rounded-2xl p-6 text-sm text-red-300 flex items-start space-x-3">
-                  <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
-                  <div>
-                    <strong className="block mb-1 text-red-400">Unauthorized Address</strong>
-                    The connected wallet is NOT registered as a beneficiary for this vault. Only registered beneficiaries can claim allocated funds.
-                  </div>
-                </div>
-              )}
 
-              {/* Tx Feedback */}
-              {writeError && (
-                <div className="bg-red-950/50 border border-red-500/40 text-red-300 p-4 rounded-xl text-xs mt-4">
-                  Claim execution failed: {writeError.message || 'Tx rejected.'}
+                  {/* Tx Feedback */}
+                  {writeError && (
+                    <div className="bg-red-950/50 border border-red-500/40 text-red-300 p-4 rounded-xl text-xs mt-4">
+                      Claim execution failed: {writeError.message || 'Tx rejected.'}
+                    </div>
+                  )}
+
+                  {activeTxHash && (
+                    <div className="bg-[#1E5148]/50 border border-[#E5C384]/30 p-4 rounded-xl text-xs text-[#CBD5E1] flex justify-between items-center mt-4">
+                      <span>Transaction Hash: <br/><code className="text-[#E5C384] font-mono">{activeTxHash}</code></span>
+                      <a
+                        href={`https://explorer.testnet.arc.network/tx/${activeTxHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-[#E98B4B] hover:underline font-semibold"
+                      >
+                        View on Explorer
+                      </a>
+                    </div>
+                  )}
+
+                  {activeTxSuccess && (
+                    <div className="bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 p-4 rounded-xl text-xs mt-4 text-center">
+                      Claim successfully executed! Funds have been distributed to your wallet address.
+                    </div>
+                  )}
+
                 </div>
-              )}
+              </motion.div>
+            )}
 
-              {activeTxHash && (
-                <div className="bg-[#1E5148]/50 border border-[#E5C384]/30 p-4 rounded-xl text-xs text-[#CBD5E1] flex justify-between items-center mt-4">
-                  <span>Transaction Hash: <br/><code className="text-[#E5C384] font-mono">{activeTxHash}</code></span>
-                  <a
-                    href={`https://explorer.testnet.arc.network/tx/${activeTxHash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-[#E98B4B] hover:underline font-semibold"
-                  >
-                    View on Explorer
-                  </a>
-                </div>
-              )}
-
-              {activeTxSuccess && (
-                <div className="bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 p-4 rounded-xl text-xs mt-4 text-center">
-                  Claim successfully executed! Funds have been distributed to your wallet address.
-                </div>
-              )}
-
-            </div>
-          </motion.div>
-        )}
-
-        {hasSearched && !activeVaultDetails && !isVaultLoading && (
-          <motion.div
-            key="no-results"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="bg-[#153F39]/50 border border-[#1E5148] rounded-3xl p-8 text-center"
-          >
-            <AlertTriangle className="h-10 w-10 text-[#E98B4B] mx-auto mb-3" />
-            <p className="text-sm text-[#FDF8F0] font-semibold">Vault Not Found</p>
-            <p className="text-xs text-[#CBD5E1]/80 mt-1">
-              Could not find any active on-chain vault with ID "{searchQuery}" on Arc Testnet.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {hasSearched && !activeVaultDetails && !isVaultLoading && (
+              <motion.div
+                key="no-results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="bg-[#153F39]/50 border border-[#1E5148] rounded-3xl p-8 text-center"
+              >
+                <AlertTriangle className="h-10 w-10 text-[#E98B4B] mx-auto mb-3" />
+                <p className="text-sm text-[#FDF8F0] font-semibold">Vault Not Found</p>
+                <p className="text-xs text-[#CBD5E1]/80 mt-1">
+                  Could not find any active on-chain vault with ID "{searchQuery}" on Arc Testnet.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
 
     </div>
   );

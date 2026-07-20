@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useConnectModal, ConnectButton } from '@rainbow-me/rainbowkit';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, 
@@ -242,8 +242,28 @@ export default function CreateVault() {
         </p>
       </div>
 
-      {/* Main Form Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      {!isConnected ? (
+        <div className="py-8 flex flex-col justify-center items-center">
+          <div className="bg-[#121412] border border-[#222421] rounded-3xl p-12 text-center max-w-xl w-full shadow-2xl space-y-8">
+            <div className="w-20 h-20 bg-[#1E5148]/30 border border-[#E5C384]/20 rounded-2xl flex items-center justify-center mx-auto">
+              <Shield className="h-10 w-10 text-[#E5C384]" />
+            </div>
+            
+            <div className="space-y-3">
+              <h3 className="font-sans font-black text-2xl text-[#E5C384] tracking-tight">Connect Your Wallet</h3>
+              <p className="text-sm text-[#829693] max-w-md mx-auto leading-relaxed">
+                Connect your wallet to create a vault. No placeholder, mock, or fake numbers will be displayed here — every metric is securely derived from your active Arc Testnet smart contracts.
+              </p>
+            </div>
+            
+            <div className="flex justify-center pt-2">
+              <ConnectButton />
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Main Form Grid */
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
         {/* Left Side: 3 Timeline Steps */}
         <div className="lg:col-span-8 relative space-y-12">
@@ -602,8 +622,9 @@ export default function CreateVault() {
             </div>
           )}
         </div>
-
       </div>
+      )}
+
     </div>
   );
 }
