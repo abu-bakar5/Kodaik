@@ -1,5 +1,6 @@
-import { FlaskConical } from 'lucide-react';
 import { Link } from 'react-router-dom';
+// @ts-expect-error - local image asset
+import logoIcon from '../assets/images/kodaik_logo_icon_1784554236635.jpg';
 
 export default function Footer() {
   return (
@@ -10,9 +11,12 @@ export default function Footer() {
           {/* Left Column - Brand Info */}
           <div className="md:col-span-6 space-y-6">
             <div className="flex items-center space-x-3">
-              <div className="bg-[#0B2E26] border border-[#1E5148]/50 p-2.5 rounded-xl shadow-md flex items-center justify-center">
-                <FlaskConical className="h-6 w-6 text-[#E5C384]" />
-              </div>
+              <img
+                src={logoIcon}
+                alt="Kodaik Logo"
+                className="h-10 w-10 object-contain rounded-xl border border-red-500/40 shadow-[0_0_10px_rgba(255,0,0,0.5)]"
+                referrerPolicy="no-referrer"
+              />
               <span className="font-display font-extrabold text-2xl tracking-tight text-[#FDF8F0] !font-sans">
                 Kodaik
               </span>
@@ -20,6 +24,10 @@ export default function Footer() {
             
             <p className="text-sm text-[#829693] max-w-sm leading-relaxed">
               Securing your digital legacy for the next generation. Trustless, non-custodial inheritance vaults on-chain.
+            </p>
+
+            <p className="text-xs text-[#829693]/60 max-w-sm leading-relaxed">
+              Kodaik is a fully non-custodial, open-source protocol. Kodaik is NOT an Arc product, nor is it officially endorsed or operated by Arc Network. Users interact with the protocol entirely at their own risk. Please verify smart contracts before locking funds.
             </p>
             
             <p className="text-xs text-[#829693]/60 pt-4">

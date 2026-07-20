@@ -26,7 +26,7 @@ export default function Navbar() {
             <img
               src={logoIcon}
               alt="Kodaik Logo"
-              className="h-10 w-10 object-contain rounded-xl shadow-md transition-transform group-hover:scale-105"
+              className="h-10 w-10 object-contain rounded-xl border border-red-500/40 shadow-[0_0_10px_rgba(255,0,0,0.5)] transition-transform group-hover:scale-105"
               referrerPolicy="no-referrer"
             />
           </NavLink>
@@ -171,7 +171,7 @@ export default function Navbar() {
                     <img
                       src={logoIcon}
                       alt="Kodaik Logo"
-                      className="h-10 w-10 object-contain rounded-xl"
+                      className="h-10 w-10 object-contain rounded-xl border border-red-500/40 shadow-[0_0_10px_rgba(255,0,0,0.5)]"
                       referrerPolicy="no-referrer"
                     />
                   </div>
