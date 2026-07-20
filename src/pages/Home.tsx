@@ -74,7 +74,7 @@ export default function Home() {
       <div className="bg-[#081512] border-t border-b border-[#1E5148]/20 py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <p className="font-sans font-medium text-xl sm:text-2xl md:text-3xl text-[#FDF8F0] tracking-tight leading-relaxed max-w-4xl mx-auto">
-            Kodaik currently secures <span className="text-[#E5C384] font-black tracking-tight">$5.2M+</span> across <span className="text-[#E5C384] font-black tracking-tight">1,204</span> vaults for <span className="text-[#E5C384] font-black tracking-tight">2,850</span> beneficiaries.
+            Kodaik is currently building on Arc Testnet
           </p>
         </div>
       </div>
