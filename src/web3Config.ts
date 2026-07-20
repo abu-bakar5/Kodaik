@@ -27,6 +27,49 @@ export const arcTestnet = defineChain({
 // Kodaik Smart Contract Configuration
 export const KODAIK_CONTRACT_ADDRESS = '0x81233718880581F68bF931bf957159db12c2F6aB' as const;
 
+// USDC and EURC known contract addresses on Arc Testnet
+export const USDC_ADDRESS = '0x3600000000000000000000000000000000000000' as const;
+export const EURC_ADDRESS = '0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a' as const;
+
+// Mapping helper to resolve token address to hardcoded symbol
+export function getTokenSymbol(address?: string): string {
+  if (!address) return '';
+  const addr = address.toLowerCase();
+  if (addr === USDC_ADDRESS.toLowerCase()) {
+    return 'USDC';
+  }
+  if (addr === EURC_ADDRESS.toLowerCase()) {
+    return 'EURC';
+  }
+  return '';
+}
+
+// ERC20 ABI for querying balanceOf, decimals, and symbol
+export const ERC20_ABI = [
+  {
+    name: 'balanceOf',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [{ name: 'account', type: 'address' }],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    name: 'decimals',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint8' }],
+  },
+  {
+    name: 'symbol',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'string' }],
+  },
+] as const;
+
+
 // ABI representing the decentralized digital inheritance vault smart contract on Arc Testnet
 export const KODAIK_ABI = [
   {

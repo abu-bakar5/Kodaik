@@ -164,6 +164,8 @@ export default function Claim() {
   const claimed = activeVaultDetails ? (activeVaultDetails as any)[4] : false;
   const totalAssets = activeVaultDetails ? (activeVaultDetails as any)[5]?.toString() : '0';
 
+  const assetSymbol = name ? (name.includes('USDC') ? 'USDC' : name.includes('EURC') ? 'EURC' : name.includes('WBTC') ? 'WBTC' : 'ARC') : 'ARC';
+
   const timeElapsed = lastActive > 0 ? Math.floor(Date.now() / 1000) - lastActive : 0;
   const isClaimable = heartbeatInterval > 0 && timeElapsed > heartbeatInterval && !claimed;
   const timeLeft = heartbeatInterval - timeElapsed;
@@ -310,7 +312,7 @@ export default function Claim() {
                     <div>
                       <span className="text-[#CBD5E1]/60 block uppercase tracking-wider mb-1">Vault Total Assets:</span>
                       <strong className="text-lg font-mono text-[#FDF8F0]">
-                        {parseFloat(totalAssets) > 0 ? `${(parseFloat(totalAssets) / 1e18).toFixed(2)} ARC` : '0 ARC'}
+                        {parseFloat(totalAssets) > 0 ? `${(parseFloat(totalAssets) / 1e18).toFixed(2)} ${assetSymbol}` : `0 ${assetSymbol}`}
                       </strong>
                     </div>
 

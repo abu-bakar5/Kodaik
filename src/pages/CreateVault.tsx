@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal, ConnectButton } from '@rainbow-me/rainbowkit';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -15,8 +15,8 @@ import {
   Loader2,
   Info
 } from 'lucide-react';
-import { parseEther, isAddress } from 'viem';
-import { KODAIK_CONTRACT_ADDRESS, KODAIK_ABI } from '../web3Config';
+import { parseEther, isAddress, formatUnits } from 'viem';
+import { KODAIK_CONTRACT_ADDRESS, KODAIK_ABI, USDC_ADDRESS, EURC_ADDRESS, ERC20_ABI } from '../web3Config';
 import { Beneficiary } from '../types';
 
 export default function CreateVault() {
@@ -32,6 +32,45 @@ export default function CreateVault() {
   // Form State
   const [selectedToken, setSelectedToken] = useState<'USDC' | 'EURC'>('USDC');
   const [depositAmount, setDepositAmount] = useState('0.00'); // amount string
+
+  // Get active token address
+  const activeTokenAddress = selectedToken === 'USDC' ? USDC_ADDRESS : EURC_ADDRESS;
+
+  // Read ERC20 token balance from the contract
+  const { data: tokenBalance, isLoading: isBalanceLoading } = useReadContract({
+    address: activeTokenAddress,
+    abi: ERC20_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address,
+    }
+  });
+
+  // Read ERC20 token decimals from the contract
+  const { data: tokenDecimals } = useReadContract({
+    address: activeTokenAddress,
+    abi: ERC20_ABI,
+    functionName: 'decimals',
+    query: {
+      enabled: !!activeTokenAddress,
+    }
+  });
+
+  const decimals = tokenDecimals ?? 18;
+  const formattedBalance = tokenBalance !== undefined
+    ? parseFloat(formatUnits(tokenBalance, decimals)).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6,
+      })
+    : '0.00';
+
+  const handleMaxClick = () => {
+    if (tokenBalance !== undefined) {
+      const fullAmount = formatUnits(tokenBalance, decimals);
+      setDepositAmount(fullAmount);
+    }
+  };
   const [sliderIndex, setSliderIndex] = useState(1); // 0 = 30 Days, 1 = 1 Year, 2 = 5 Years
   const [heartbeatInterval, setHeartbeatInterval] = useState(365); // default 365 days (1 year)
   
@@ -319,9 +358,30 @@ export default function CreateVault() {
 
               {/* Amount Input */}
               <div className="space-y-3">
-                <label className="block text-xs font-bold text-[#829693] uppercase tracking-wider">
-                  Amount
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="block text-xs font-bold text-[#829693] uppercase tracking-wider">
+                    Amount
+                  </label>
+                  {isConnected && (
+                    <div className="flex items-center gap-2 text-xs text-[#829693]">
+                      <span>Balance:</span>
+                      <span className="font-mono font-bold text-[#3CD3A6]">
+                        {isBalanceLoading ? (
+                          <span className="animate-pulse">Loading...</span>
+                        ) : (
+                          `${formattedBalance} ${selectedToken}`
+                        )}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleMaxClick}
+                        className="bg-[#1E5148]/40 hover:bg-[#1E5148]/80 text-[#E5C384] border border-[#E5C384]/20 hover:border-[#E5C384]/50 px-2 py-0.5 rounded text-[10px] font-sans font-bold transition-all cursor-pointer uppercase tracking-wider ml-1"
+                      >
+                        Max
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <div className="bg-[#040A08] border border-[#1E5148]/20 rounded-xl p-5 flex items-center">
                   <span className="text-3xl font-medium text-[#CBD5E1]/30 mr-3 select-none">
                     {selectedToken === 'USDC' ? '$' : '€'}

@@ -127,7 +127,7 @@ export default function Navbar() {
                             <span>{account.displayName}</span>
                             {account.displayBalance ? (
                               <span className="text-xs text-[#E5C384] border-l border-[#E5C384]/30 pl-2">
-                                {account.displayBalance}
+                                {account.displayBalance.replace(/\bR\b/g, 'ARC').replace(/\br\b/g, 'ARC')}
                               </span>
                             ) : null}
                           </button>
