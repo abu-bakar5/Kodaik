@@ -165,27 +165,57 @@ export default function Home() {
       </div>
 
       {/* Horizontal Trust Badges Ribbon / Ticker */}
-      <div className="border-t border-[#1E5148]/20 bg-[#031511] py-8 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-around gap-y-6 gap-x-8 text-center">
+      <div className="border-t border-[#1E5148]/20 bg-[#031511] py-8 overflow-hidden relative w-full">
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+          }
+          .animate-marquee-slow {
+            display: flex;
+            width: max-content;
+            animation: marquee 20s linear infinite;
+          }
+          .animate-marquee-slow:hover {
+            animation-play-state: paused;
+          }
+        `}} />
+        <div className="animate-marquee-slow flex items-center">
           
-          <div className="flex items-center space-x-3 text-[#FDF8F0] font-sans font-black text-sm sm:text-base tracking-widest uppercase">
-            <Shield className="h-5 w-5 text-[#E5C384]" />
-            <span>NON-CUSTODIAL</span>
+          {/* Block 1 */}
+          <div className="flex items-center space-x-12 sm:space-x-16 md:space-x-24 shrink-0 pr-12 sm:pr-16 md:pr-24">
+            <div className="flex items-center space-x-3 text-[#FDF8F0] font-sans font-black text-sm sm:text-base tracking-widest uppercase shrink-0">
+              <Shield className="h-5 w-5 text-[#E5C384]" />
+              <span>NON-CUSTODIAL</span>
+            </div>
+
+            <div className="flex items-center space-x-3 text-[#FDF8F0] font-sans font-black text-sm sm:text-base tracking-widest uppercase shrink-0">
+              <Code2 className="h-5 w-5 text-[#E5C384]" />
+              <span>OPEN SOURCE</span>
+            </div>
+
+            <div className="flex items-center space-x-3 text-[#FDF8F0] font-sans font-black text-sm sm:text-base tracking-widest uppercase shrink-0">
+              <Landmark className="h-5 w-5 text-[#E5C384]" />
+              <span>NO COMPANY CONTROL</span>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-3 text-[#FDF8F0] font-sans font-black text-sm sm:text-base tracking-widest uppercase">
-            <Code2 className="h-5 w-5 text-[#E5C384]" />
-            <span>OPEN SOURCE</span>
-          </div>
+          {/* Block 2 (Exact Duplicate for Seamless Loop) */}
+          <div className="flex items-center space-x-12 sm:space-x-16 md:space-x-24 shrink-0 pr-12 sm:pr-16 md:pr-24">
+            <div className="flex items-center space-x-3 text-[#FDF8F0] font-sans font-black text-sm sm:text-base tracking-widest uppercase shrink-0">
+              <Shield className="h-5 w-5 text-[#E5C384]" />
+              <span>NON-CUSTODIAL</span>
+            </div>
 
-          <div className="flex items-center space-x-3 text-[#FDF8F0] font-sans font-black text-sm sm:text-base tracking-widest uppercase">
-            <Landmark className="h-5 w-5 text-[#E5C384]" />
-            <span>NO COMPANY CONTROL</span>
-          </div>
+            <div className="flex items-center space-x-3 text-[#FDF8F0] font-sans font-black text-sm sm:text-base tracking-widest uppercase shrink-0">
+              <Code2 className="h-5 w-5 text-[#E5C384]" />
+              <span>OPEN SOURCE</span>
+            </div>
 
-          <div className="hidden md:flex items-center space-x-3 text-[#FDF8F0] font-sans font-black text-sm sm:text-base tracking-widest uppercase">
-            <Shield className="h-5 w-5 text-[#E5C384]" />
-            <span>NON-CUSTODIAL</span>
+            <div className="flex items-center space-x-3 text-[#FDF8F0] font-sans font-black text-sm sm:text-base tracking-widest uppercase shrink-0">
+              <Landmark className="h-5 w-5 text-[#E5C384]" />
+              <span>NO COMPANY CONTROL</span>
+            </div>
           </div>
 
         </div>
